@@ -5,20 +5,33 @@
 
 void dashboard_view()
 {
+    static int last_state = -1;  // -1 = none, 0 = normal, 1 = warning
     CAN_Frame dashview;
 
-    if(can_receive(&dashview))
+    if (can_receive(&dashview))
     {
-        unsigned int temp_x10 = ((dashview.data[0]<<8)|dashview.data[1]);
-        float temperature = temp_x10/10.0f;
-        printf("\n[DASHBOARD REVIEW]: ");
-        if(dashview.source == ECU_SENSOR && dashview.type == MSG_TYPE_TEMPERATURE)
+        unsigned int temp_x10 = ((dashview.data[0] << 8) | dashview.data[1]);
+        float temperature = temp_x10 / 10.0f;
+
+        printf(BLUE "\n[DASHBOARD REVIEW]: " RESET);
+
+        if (dashview.type == MSG_TYPE_WARNING)
         {
-            printf(GREEN"Temperature levels are Normal!! Current Temperature is : %f\n",temperature);
+            if (last_state != 1)
+            {
+                printf(RED "WARNING!! TEMPERATURE HIGH!! (Above 25 Degree Celsius)\n" RESET);
+                last_state = 1;
+            }
+            printf(RED "WARNING PERSISTS!! Current Temperature: %.1f Degree Celsius\n" RESET, temperature);
         }
-        else if(dashview.source == ECU_ENGINE && dashview.type == MSG_TYPE_WARNING)
+        else if (dashview.type == MSG_TYPE_TEMPERATURE)
         {
-            printf(RED"WARNING!! TEMPERATURE HIGH!! Current Temperature is : %f\n",temperature);
+            if (last_state != 0)
+            {
+                printf(GREEN "Temperature returned to NORMAL range.\n" RESET);
+                last_state = 0;
+            }
+            printf(GREEN "Current Temperature: %.1f Degree Celsius\n" RESET, temperature);
         }
     }
 }

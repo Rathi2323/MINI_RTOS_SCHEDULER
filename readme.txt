@@ -36,4 +36,4 @@ Resume tagline example:
 “Developed a virtual CAN bus simulator in C, implementing message arbitration, multi-node communication, and diagnostics between simulated ECUs using modular design and data structures.”
 
 
-gcc main.c can_bus.c temp_sensor_ecu.c engine_ecu.c dashboard_ecu.c -o mini_rtos.exe
+gcc main.c can_bus.c temp_sensor_ecu.c engine_ecu.c dashboard_ecu.c -o output/mini_rtos.exe

@@ -4,6 +4,8 @@
 #include "can_bus.h"
 #include "color.h"
 
+static int warn_activity = 0;
+
 int check_temperature()
 {
   CAN_Frame tempframe;
@@ -20,20 +22,27 @@ int check_temperature()
         CAN_Frame warnframe;   
         warnframe.length = 2;
         warnframe.data[0]=tempframe.data[0];
-        warnframe.data[1]=tempframe.data[1];    
-        if(temperature > 25.f)
+        warnframe.data[1]=tempframe.data[1]; 
+        warnframe.source = ECU_ENGINE;    
+        if(!warn_activity && temperature > 25.f)
             {
-         
+            warn_activity = 1;
             warnframe.id = 0x100;
             warnframe.type = MSG_TYPE_WARNING;
-            warnframe.source = ECU_ENGINE; 
             can_send(&warnframe);
             }
-        else{
+        else if(warn_activity && temperature < 23.f)
+        {
+             warn_activity = 0;
              warnframe.id = 0x150;
              warnframe.type = MSG_TYPE_TEMPERATURE;
-             warnframe.source = ECU_SENSOR; 
              can_send(&warnframe);
+        }
+        else
+        {
+            warnframe.id = warn_activity ? 0x100 : 0x150;
+            warnframe.type = warn_activity ? MSG_TYPE_WARNING : MSG_TYPE_TEMPERATURE;
+            can_send(&warnframe);
         }
         return 1;
      }
