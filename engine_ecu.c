@@ -16,18 +16,26 @@ int check_temperature()
         float temperature = temp_x10/10.0f;
 
         printf(CYAN"[ENGINE ECU]" RESET "Temperature Check\n");
+
+        CAN_Frame warnframe;   
+        warnframe.length = 2;
+        warnframe.data[0]=tempframe.data[0];
+        warnframe.data[1]=tempframe.data[1];    
         if(temperature > 25.f)
             {
-            CAN_Frame warnframe;
+         
             warnframe.id = 0x100;
-            warnframe.length = 2;
             warnframe.type = MSG_TYPE_WARNING;
-            warnframe.source = ECU_ENGINE;
-            warnframe.data[0]=tempframe.data[0];
-            warnframe.data[1]=tempframe.data[1];
+            warnframe.source = ECU_ENGINE; 
             can_send(&warnframe);
-            return 1;
             }
+        else{
+             warnframe.id = 0x150;
+             warnframe.type = MSG_TYPE_TEMPERATURE;
+             warnframe.source = ECU_SENSOR; 
+             can_send(&warnframe);
+        }
+        return 1;
      }
 
    }

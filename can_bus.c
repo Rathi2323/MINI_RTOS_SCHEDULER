@@ -5,7 +5,7 @@
 #include "color.h"
 
 #define MAX_QUEUE_SIZE 10
-#define NUM_ECU 3
+#define NUM_ECU 1
 
 static CAN_Frame bus_buffer[MAX_QUEUE_SIZE];
 static int queue_size = 0;
