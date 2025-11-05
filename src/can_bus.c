@@ -5,12 +5,18 @@
 #include "color.h"
 
 #define MAX_QUEUE_SIZE 10
-#define NUM_ECU 1
+#define NUM_ECU 2
 
 static CAN_Frame bus_buffer[MAX_QUEUE_SIZE];
 static int queue_size = 0;
 static int message_available = 0;
 static int read_count = 0;
+
+void CAN_Init(void)
+{
+    memset(bus_buffer, 0, sizeof(bus_buffer));
+    printf(YELLOW "[BUS]" RESET " CAN Bus Initialized\n");
+}
 
 static int get_highest_priority_index(void)
 {
