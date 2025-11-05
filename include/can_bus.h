@@ -22,7 +22,7 @@ typedef struct
     MessageType type;
     ECU_Source source;
 }CAN_Frame;
-
+void CAN_Init(void);
 void can_send(const CAN_Frame *frame); 
 int can_receive(CAN_Frame *frame);
 #endif
